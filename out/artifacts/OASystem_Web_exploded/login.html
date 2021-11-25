@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Office Automation System</title>
+    <link rel="stylesheet" href="/resources/layui/css/layui.css">
+    <style>
+        body{
+            background-color: #f2f2f2;
+        }
+        .oa-container{
+            background-color: white;
+            position: absolute;
+            width:400px;
+            height: 350px;
+            top: 10%;
+            left: 30%;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="oa-container">
+    <h1 style="text-align: center;margin-bottom: 20px">Office Automation System</h1>
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">username:</label>
+            <div class="layui-input-block">
+                <input type="text" id="username" name="username" placeholder="Please input username" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">password:</label>
+            <div class="layui-input-block">
+                <input type="password" id="password" name="password" placeholder="Please input password" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="login">login</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
