@@ -55,6 +55,12 @@
 <!--            only test and compile, not deploy-->
             <scope>provided</scope>
         </dependency>
+<!--        json-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.78</version>
+        </dependency>
 
     </dependencies>
     <build>

@@ -17,6 +17,7 @@
           <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.5.7" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:2.0.0-alpha4" />
           <element id="library" level="project" name="Maven: org.freemarker:freemarker:2.3.29" />
+          <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.78" />
         </element>
       </element>
     </root>

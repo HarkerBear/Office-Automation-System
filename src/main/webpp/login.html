@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Office Automation System</title>
     <link rel="stylesheet" href="/resources/layui/css/layui.css">
+    <script src="/resources/layui/layui.all.js"></script>
     <style>
         body{
             background-color: #f2f2f2;
@@ -17,6 +18,10 @@
             left: 30%;
             padding: 20px;
         }
+        #username,#password{
+            text-align: center;
+            font-size: 24px;
+        }
     </style>
 </head>
 <body>
@@ -24,23 +29,36 @@
     <h1 style="text-align: center;margin-bottom: 20px">Office Automation System</h1>
     <form class="layui-form">
         <div class="layui-form-item">
-            <label class="layui-form-label">username:</label>
-            <div class="layui-input-block">
-                <input type="text" id="username" name="username" placeholder="Please input username" autocomplete="off" class="layui-input">
-            </div>
+                <input type="text" lay-verify="required" id="username" name="username" placeholder="Please input username" autocomplete="off" class="layui-input">
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">password:</label>
-            <div class="layui-input-block">
-                <input type="password" id="password" name="password" placeholder="Please input password" autocomplete="off" class="layui-input">
-            </div>
+                <input type="password" lay-verify="required" id="password" name="password" placeholder="Please input password" autocomplete="off" class="layui-input">
         </div>
         <div class="layui-form-item">
-            <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="login">login</button>
-            </div>
+<!--lay-filter is this element's id-->
+                <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="login">login</button>
         </div>
     </form>
 </div>
+<script>
+    layui.form.on("submit(login)",function (formdata) {
+        console.log(formdata);
+        layui.$.ajax({
+            url: "/check_login",
+            data: formdata.field,
+            type: "post",
+            dataType: "json",
+            success: function(json){
+                if(json.code=="0"){
+                    // layui.layer.msg alerts message
+                    layui.layer.msg("Success!");
+                }else{
+                    layui.layer.msg(json.message);
+                }
+            }
+        })
+        return false;
+    })
+</script>
 </body>
 </html>
