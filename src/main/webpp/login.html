@@ -51,7 +51,9 @@
             success: function(json){
                 if(json.code=="0"){
                     // layui.layer.msg alerts message
-                    layui.layer.msg("Success!");
+                    // layui.layer.msg("Success!");
+                    //redirect to new url
+                    window.location.href=json.redirect_url;
                 }else{
                     layui.layer.msg(json.message);
                 }

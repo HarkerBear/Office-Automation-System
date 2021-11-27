@@ -22,7 +22,7 @@
                     <span class="layui-icon layui-icon-user" style="font-size: 20px">
                     </span>
                     <!--user info-->
-                    name[department-title]
+                    ${current_employee.name}[${current_department.departmentName}-${current_employee.title}]
                 </a>
             </li>
             <!--sign out-->
@@ -35,34 +35,21 @@
         <div class="layui-side-scroll">
             <!--tree navigator-->
             <ul class="layui-nav layui-nav-tree">
-                <!--parent nodes-->
+                <#list node_list as node>
+                <!--parent node-->
+                    <#if node.nodeType==1>
                 <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0)">module1</a>
-                    <dl class="layui-nav-child module" data-node-id="1"></dl>
+                    <a href="javascript:void(0)">${node.nodeName}</a>
+                    <dl class="layui-nav-child module" data-node-id="${node.nodeId}"></dl>
                 </li>
-                <!--children nodes-->
-                <dd class="function" data-parent-id="1">
-                    <a href="javascript:void(0)" target="ifmMain">功能1</a>
+                    </#if>
+                <!--children node-->
+                    <#if node.nodeType==2>
+                <dd class="function" data-parent-id="${node.parentId}">
+                    <a href="javascript:void(0)" target="ifmMain">${node.nodeName}</a>
                 </dd>
-                <dd class="function" data-parent-id="1">
-                    <a href="javascript:void(0)" target="ifmMain">功能2</a>
-                </dd>
-                <dd class="function" data-parent-id="1">
-                    <a href="javascript:void(0)" target="ifmMain">功能3</a>
-                </dd>
-                <li class="layui-nav-item layui-nav-itemed">
-                    <a href="javascript:void(0)">模块2</a>
-                    <dl class="layui-nav-child module" data-node-id="2"></dl>
-                </li>
-                <dd class="function" data-parent-id="2">
-                    <a href="javascript:void(0)" target="ifmMain">功能3</a>
-                </dd>
-                <dd class="function" data-parent-id="2">
-                    <a href="javascript:void(0)" target="ifmMain">功能4</a>
-                </dd>
-                <dd class="function" data-parent-id="2">
-                    <a href="javascript:void(0)" target="ifmMain">功能5</a>
-                </dd>
+                    </#if>
+                </#list>
             </ul>
         </div>
     </div>
