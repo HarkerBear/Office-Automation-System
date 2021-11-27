@@ -5,6 +5,15 @@ public class User {
     private String userName;
     private String password;
     private Long employeeId;
+    private int salt;
+
+    public int getSalt() {
+        return salt;
+    }
+
+    public void setSalt(int salt) {
+        this.salt = salt;
+    }
 
     public Long getUserId() {
         return userId;

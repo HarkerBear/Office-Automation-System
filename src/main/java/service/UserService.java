@@ -5,6 +5,7 @@ import dao.UserDao;
 import entity.Node;
 import entity.User;
 import service.exception.BusinessException;
+import utils.MD5Utils;
 
 import java.util.List;
 
@@ -24,7 +25,8 @@ public class UserService {
         if(user==null){
             throw new BusinessException("L001","No Such User");
         }
-        if(!password.equals(user.getPassword())){
+        String md5=MD5Utils.md5Digest(password,user.getSalt());
+        if(!md5.equals(user.getPassword())){
             throw new BusinessException("L002","Wrong Password");
         }
         return user;

@@ -26,7 +26,7 @@
                 </a>
             </li>
             <!--sign out-->
-            <li class="layui-nav-item"><a href="#">sign out</a></li>
+            <li class="layui-nav-item"><a href="/logout">Sign Out</a></li>
         </ul>
     </div>
     <!--menu-->
