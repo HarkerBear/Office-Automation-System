@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.ProcessFlowDao">
+    <insert id="insert" parameterType="entity.ProcessFlow"
+            useGeneratedKeys="true" keyColumn="process_id" keyProperty="processId">
+        INSERT INTO adm_process_flow(form_id,operator_id,action,result,reason,create_time,audit_time,order_no,status,is_last)
+        VALUES (#{formId},#{operatorId},#{action},#{result},#{reason},#{createTime},#{auditTime},#{orderNo},#{status},#{isLast})
+    </insert>
+</mapper>

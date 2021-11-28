@@ -8,4 +8,13 @@
         INSERT INTO adm_leave_form(employee_id,form_type,start_time,end_time,reason,create_time,status)
         values (#{employeeId},#{formType},#{startTime},#{endTime},#{reason},#{createTime},#{status})
     </insert>
+    <select id="selectByParams" parameterType="java.util.Map" resultType="java.util.Map">
+        select f.*,e.name,d.department_name
+        from adm_leave_form f,adm_process_flow pf, adm_employee e,adm_department d
+        where
+        f.form_id=pf.form_id
+        and f.employee_id=e.employee_id
+        and e.department_id=d.department_id
+        and pf.status=#{pf_status} and pf.operator_id=#{pf_operator_id}
+    </select>
 </mapper>

@@ -8,6 +8,8 @@ import utils.MybatisUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class LeaveFormDaoTest extends TestCase {
 
@@ -36,5 +38,15 @@ public class LeaveFormDaoTest extends TestCase {
             return null;
         });
 
+    }
+
+    @Test
+    public void testSelectByParams() {
+        MybatisUtils.executeQuery(sqlSession -> {
+            LeaveFormDao dao=sqlSession.getMapper(LeaveFormDao.class);
+            List<Map> list=dao.selectByParams("Processing",2l);
+            System.out.println(list);
+            return list;
+        });
     }
 }
