@@ -34,6 +34,8 @@ public class LeaveFormServlet extends HttpServlet {
             this.create(request,response);
         }else if(methodName.equals("list")){
             this.getLeaveFormList(request,response);
+        }else if(methodName.equals("audit")){
+            this.audit(request,response);
         }
     }
 
@@ -98,5 +100,25 @@ public class LeaveFormServlet extends HttpServlet {
         result.put("data",formList);
         String json=JSON.toJSONString(result);
         response.getWriter().println(json);
+    }
+
+    private void audit(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException{
+        String formId=request.getParameter("formId");
+        String result=request.getParameter("result");
+        String reason=request.getParameter("reason");
+        User user=(User)request.getSession().getAttribute("login_user");
+        Map mpResult=new HashMap();
+        try {
+            leaveFormService.audit(Long.parseLong(formId), user.getEmployeeId(), result, reason);
+            mpResult.put("code","0");
+            mpResult.put("message","success");
+        }catch (Exception e){
+            logger.error("Failed",e);
+            mpResult.put("code",e.getClass().getSimpleName());
+            mpResult.put("message",e.getMessage());
+        }
+        String json=JSON.toJSONString(mpResult);
+        response.getWriter().println(json);
+
     }
 }

@@ -17,4 +17,11 @@
         and e.department_id=d.department_id
         and pf.status=#{pf_status} and pf.operator_id=#{pf_operator_id}
     </select>
+    <select id="selectById" parameterType="Long" resultType="entity.LeaveForm">
+        select * from adm_leave_form where form_id=#{value}
+    </select>
+    <update id="update" parameterType="entity.LeaveForm">
+        UPDATE adm_leave_form SET employee_id=#{employeeId},form_type=#{formType},start_time=#{startTime},end_time=#{endTime},reason=#{reason},create_time=#{createTime},status=#{status}
+        WHERE form_id=#{form_id}
+    </update>
 </mapper>

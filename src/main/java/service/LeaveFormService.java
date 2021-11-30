@@ -6,11 +6,13 @@ import dao.ProcessFlowDao;
 import entity.Employee;
 import entity.LeaveForm;
 import entity.ProcessFlow;
+import service.exception.BusinessException;
 import utils.MybatisUtils;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LeaveFormService {
 
@@ -100,6 +102,53 @@ public class LeaveFormService {
             LeaveFormDao dao=sqlSession.getMapper(LeaveFormDao.class);
             List<Map> list=dao.selectByParams(pfStatus,operatorId);
             return list;
+        });
+    }
+
+    public void audit(Long formId,Long operatorId,String result,String reason){
+        MybatisUtils.executeUpdate(sqlSession -> {
+            //convert status to 'completed'
+            ProcessFlowDao processFlowDao=sqlSession.getMapper(ProcessFlowDao.class);
+            List<ProcessFlow> flowList=processFlowDao.selectByFormId(formId);
+            if(flowList.size()==0){
+                throw new BusinessException("PF001","Valid");
+            }
+            List<ProcessFlow> processList=flowList.stream().filter(p->p.getOperatorId()==operatorId && p.getStatus().equals("Processing")).collect(Collectors.toList());
+            ProcessFlow process=null;
+            if(processList.size()==0){
+                throw new BusinessException("PF002","No task");
+            }else{
+                process=processList.get(0);
+                process.setStatus("Completed");
+                process.setResult(result);
+                process.setReason(reason);
+                process.setAuditTime(new Date());
+                processFlowDao.update(process);
+            }
+            //if isLast==1, end the process
+            LeaveFormDao leaveFormDao=sqlSession.getMapper(LeaveFormDao.class);
+            LeaveForm form=leaveFormDao.selectById(formId);
+            if(process.getIsLast()==1){
+                form.setStatus(result);
+                leaveFormDao.update(form);
+                //if isLast==0 and get approved. The next node's status should be ready
+                //other wise, the next node's status should be declined
+            }else{
+                List<ProcessFlow> readyList=flowList.stream().filter(p->p.getStatus().equals("Ready")).collect(Collectors.toList());
+                if(result.equals("Approved")){
+                    ProcessFlow readyProcess=readyList.get(0);
+                    readyProcess.setStatus("Processing");
+                    processFlowDao.update(readyProcess);
+                }else if(result.equals("Declined")){
+                    for(ProcessFlow p:readyList){
+                        p.setStatus("Cancelled");
+                        processFlowDao.update(p);
+                    }
+                    form.setStatus("Declined");
+                    leaveFormDao.update(form);
+                }
+            }
+            return null;
         });
     }
 }

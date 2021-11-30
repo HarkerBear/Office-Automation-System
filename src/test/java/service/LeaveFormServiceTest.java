@@ -62,4 +62,19 @@ public class LeaveFormServiceTest extends TestCase {
         LeaveForm savedForm=leaveFormService.createLeaveForm(form);
         System.out.println(savedForm.getFormId());
     }
+
+    @Test
+    public void testAudit1() {
+        leaveFormService.audit(31l,2l,"Approved","Be healthy!");
+    }
+
+    @Test
+    public void testAudit2() {
+        leaveFormService.audit(32l,2l,"Declined","This is a peak day for us!");
+    }
+
+    @Test
+    public void testAudit3() {
+        leaveFormService.audit(31l,2l,"Approved","approved");
+    }
 }

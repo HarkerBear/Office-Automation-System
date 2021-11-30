@@ -8,4 +8,13 @@
         INSERT INTO adm_process_flow(form_id,operator_id,action,result,reason,create_time,audit_time,order_no,status,is_last)
         VALUES (#{formId},#{operatorId},#{action},#{result},#{reason},#{createTime},#{auditTime},#{orderNo},#{status},#{isLast})
     </insert>
+
+    <select id="selectByFormId" parameterType="Long" resultType="entity.ProcessFlow">
+        select * from adm_process_flow where form_id=#{value} order by order_no
+    </select>
+
+    <update id="update" parameterType="entity.ProcessFlow">
+        UPDATE adm_process_flow SET form_id=#{formId},operator_id=#{operatorId},action=#{action},result=#{result},create_time=#{createTime},audit_time=#{auditTime},order_no=#{orderNo},status=#{status},is_last=#{isLast}
+        where process_id=#{processId}
+    </update>
 </mapper>
