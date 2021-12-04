@@ -65,7 +65,7 @@ public class LeaveFormServiceTest extends TestCase {
 
     @Test
     public void testAudit1() {
-        leaveFormService.audit(31l,2l,"Approved","Be healthy!");
+        leaveFormService.audit(37l,2l,"Approved","Be healthy!");
     }
 
     @Test
@@ -77,4 +77,5 @@ public class LeaveFormServiceTest extends TestCase {
     public void testAudit3() {
         leaveFormService.audit(31l,2l,"Approved","approved");
     }
+
 }

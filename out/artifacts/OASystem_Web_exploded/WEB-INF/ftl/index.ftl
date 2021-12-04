@@ -55,7 +55,7 @@
     </div>
     <!--iframe-->
     <div class="layui-body" style="overflow-y: hidden">
-        <iframe name="ifmMain" style="border: 0px;width: 100%;height: 100%"></iframe>
+        <iframe name="ifmMain" src="/forward/notice" style="border: 0px;width: 100%;height: 100%"></iframe>
     </div>
     <!--footer author-->
     <div class="layui-footer">

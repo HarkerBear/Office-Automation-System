@@ -2,13 +2,16 @@ package service;
 
 import dao.EmployeeDao;
 import dao.LeaveFormDao;
+import dao.NoticeDao;
 import dao.ProcessFlowDao;
 import entity.Employee;
 import entity.LeaveForm;
+import entity.Notice;
 import entity.ProcessFlow;
 import service.exception.BusinessException;
 import utils.MybatisUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +40,8 @@ public class LeaveFormService {
             flow1.setStatus("Completed");
             flow1.setIsLast(0);
             processFlowDao.insert(flow1);
-
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd-HH H");
+            NoticeDao noticeDao=sqlSession.getMapper(NoticeDao.class);
             if(employee.getLevel()<7){
                 Employee dmanager=employeeDao.selectLeader(employee);
                 ProcessFlow flow2=new ProcessFlow();
@@ -66,6 +70,11 @@ public class LeaveFormService {
                     flow2.setIsLast(1);
                     processFlowDao.insert(flow2);
                 }
+                String noticeContent=String.format("You have applied leave[%s-%s] and please wait for the audit process.",sdf.format(form.getStartTime()),sdf.format(form.getEndTime()));
+                noticeDao.insert(new Notice(employee.getEmployeeId(),noticeContent));
+                noticeContent=String.format("%s-%s has applied leave[%s-%s], please audit soon."
+                ,employee.getTitle(),employee.getName(),sdf.format(form.getStartTime()),sdf.format(form.getEndTime()));
+                noticeDao.insert(new Notice(dmanager.getEmployeeId(),noticeContent));
             }else if(employee.getLevel()==7){
                 Employee manager=employeeDao.selectLeader(employee);
                 ProcessFlow flow=new ProcessFlow();
@@ -77,6 +86,12 @@ public class LeaveFormService {
                 flow.setOrderNo(1);
                 flow.setIsLast(1);
                 processFlowDao.insert(flow);
+                String noticeContent=String.format("You have applied leave[%s-%s] and please wait for the audit process."
+                        ,sdf.format(form.getStartTime()),sdf.format(form.getEndTime()));
+                noticeDao.insert(new Notice(employee.getEmployeeId(),noticeContent));
+                noticeContent=String.format("%s-%s has applied leave[%s-%s], please audit soon."
+                        ,employee.getTitle(),employee.getName(),sdf.format(form.getStartTime()),sdf.format(form.getEndTime()));
+                noticeDao.insert(new Notice(manager.getEmployeeId(),noticeContent));
             }else if(employee.getLevel()==8){
                 Employee manager=employeeDao.selectLeader(employee);
                 ProcessFlow flow=new ProcessFlow();
@@ -91,6 +106,9 @@ public class LeaveFormService {
                 flow.setOrderNo(2);
                 flow.setIsLast(1);
                 processFlowDao.insert(flow);
+                String noticeContent=String.format("You have applied leave[%s-%s]. It has been approved automatically."
+                        ,sdf.format(form.getStartTime()),sdf.format(form.getEndTime()));
+                noticeDao.insert(new Notice(employee.getEmployeeId(),noticeContent));
             }
             return form;
         });
@@ -128,25 +146,61 @@ public class LeaveFormService {
             //if isLast==1, end the process
             LeaveFormDao leaveFormDao=sqlSession.getMapper(LeaveFormDao.class);
             LeaveForm form=leaveFormDao.selectById(formId);
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd-HH H");
+            EmployeeDao employeeDao=sqlSession.getMapper(EmployeeDao.class);
+            Employee employee=employeeDao.selectById(form.getEmployeeId());
+            Employee operator=employeeDao.selectById(operatorId);
+            NoticeDao noticeDao=sqlSession.getMapper(NoticeDao.class);
             if(process.getIsLast()==1){
                 form.setStatus(result);
                 leaveFormDao.update(form);
                 //if isLast==0 and get approved. The next node's status should be ready
                 //other wise, the next node's status should be declined
+                String noticeContent=String.format("You leave application[%s-%s] has ended by %s-%s. Result:%s Reason:%s"
+                ,sdf.format(form.getStartTime()),sdf.format(form.getEndTime())
+                ,operator.getTitle(),operator.getName(),result,reason);
+                noticeDao.insert(new Notice(form.getEmployeeId(),noticeContent));
+                noticeContent=String.format("You have resolved [%s-%s]'s leave application[%s-%s]. Result:%s Reason:%s"
+                        ,employee.getTitle(),employee.getName(),sdf.format(form.getStartTime()),sdf.format(form.getEndTime())
+                        ,result,reason);
+                noticeDao.insert(new Notice(operator.getEmployeeId(),noticeContent));
             }else{
                 List<ProcessFlow> readyList=flowList.stream().filter(p->p.getStatus().equals("Ready")).collect(Collectors.toList());
                 if(result.equals("Approved")){
                     ProcessFlow readyProcess=readyList.get(0);
                     readyProcess.setStatus("Processing");
                     processFlowDao.update(readyProcess);
-                }else if(result.equals("Declined")){
-                    for(ProcessFlow p:readyList){
+                    String noticeContent=String.format("You leave application[%s-%s] has been approved by %s-%s. Reason:%s"
+                            ,sdf.format(form.getStartTime()),sdf.format(form.getEndTime())
+                            ,operator.getTitle(),operator.getName(),reason);
+                    noticeDao.insert(new Notice(form.getEmployeeId(),noticeContent));
+
+                    noticeContent=String.format("You have resolved [%s-%s]'s leave application[%s-%s]. Result:%s Reason:%s"
+                            ,employee.getTitle(),employee.getName(),sdf.format(form.getStartTime()),sdf.format(form.getEndTime())
+                            ,result,reason);
+                    noticeDao.insert(new Notice(operator.getEmployeeId(),noticeContent));
+
+                    noticeContent=String.format("%s-%s has applied leave[%s-%s], please audit soon."
+                            ,employee.getTitle(),employee.getName(),sdf.format(form.getStartTime()),sdf.format(form.getEndTime()));
+                    noticeDao.insert(new Notice(readyProcess.getOperatorId(),noticeContent));
+
+                }else if(result.equals("Declined")) {
+                    for (ProcessFlow p : readyList) {
                         p.setStatus("Cancelled");
                         processFlowDao.update(p);
                     }
                     form.setStatus("Declined");
                     leaveFormDao.update(form);
                 }
+                String noticeContent=String.format("You leave application[%s-%s] has been declined by %s-%s. Reason:%s"
+                        ,sdf.format(form.getStartTime()),sdf.format(form.getEndTime())
+                        ,operator.getTitle(),operator.getName(),reason);
+                noticeDao.insert(new Notice(form.getEmployeeId(),noticeContent));
+
+                noticeContent=String.format("You have resolved [%s-%s]'s leave application[%s-%s]. Result:%s Reason:%s"
+                        ,employee.getTitle(),employee.getName(),sdf.format(form.getStartTime()),sdf.format(form.getEndTime())
+                        ,result,reason);
+                noticeDao.insert(new Notice(operator.getEmployeeId(),noticeContent));
             }
             return null;
         });
