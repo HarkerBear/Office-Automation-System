@@ -9,7 +9,7 @@ Hello this is an office automation system which automates leave application and 
 * Data Protection: MD5
 
 ## Check it out!
-I made a video about it, please check it out! The link is https://www.youtube.com/watch?v=ttiZALCrS7s
+I made a video for it, please check it out! The link is https://www.youtube.com/watch?v=ttiZALCrS7s
 
 ## Contact the author.
 Please email: timyiyu.berkeley@gmail.com
